@@ -12,7 +12,7 @@ PROJECT(protobuf-c)
 option(BUILD_PROTO3 "BUILD_PROTO3" ON)
 option(BUILD_PROTOC "Build protoc-gen-c" ON)
 if(CMAKE_BUILD_TYPE MATCHES Debug)
-option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TESTS "Build tests" OFF)
 else()
 option(BUILD_TESTS "Build tests" OFF)
 endif()
@@ -129,13 +129,13 @@ ADD_EXECUTABLE(test-generated-code ${TEST_DIR}/generated-code/test-generated-cod
 TARGET_LINK_LIBRARIES(test-generated-code protobuf-c)
 
 
-ADD_CUSTOM_COMMAND(OUTPUT t/test-full.pb.cc t/test-full.pb.h
+ADD_CUSTOM_COMMAND(OUTPUT ${CMAKE_BINARY_DIR}/t/test-full.pb.cc ${CMAKE_BINARY_DIR}/t/test-full.pb.h
                    COMMAND ${PROTOBUF_PROTOC_EXECUTABLE}
                    ARGS --cpp_out ${CMAKE_BINARY_DIR} -I${MAIN_DIR} ${TEST_DIR}/test-full.proto)
 
 GENERATE_TEST_SOURCES(${TEST_DIR}/test-full.proto t/test-full.pb-c.c t/test-full.pb-c.h)
 
-ADD_EXECUTABLE(cxx-generate-packed-data ${TEST_DIR}/generated-code2/cxx-generate-packed-data.cc t/test-full.pb.h t/test-full.pb.cc protobuf-c/protobuf-c.pb.cc protobuf-c/protobuf-c.pb.h)
+ADD_EXECUTABLE(cxx-generate-packed-data ${TEST_DIR}/generated-code2/cxx-generate-packed-data.cc ${CMAKE_BINARY_DIR}/t/test-full.pb.h ${CMAKE_BINARY_DIR}/t/test-full.pb.cc ${CMAKE_BINARY_DIR}/protobuf-c/protobuf-c.pb.cc ${CMAKE_BINARY_DIR}/protobuf-c/protobuf-c.pb.h)
 TARGET_LINK_LIBRARIES(cxx-generate-packed-data ${PROTOBUF_LIBRARY})
 IF (MSVC AND BUILD_SHARED_LIBS)
 	TARGET_COMPILE_DEFINITIONS(cxx-generate-packed-data PRIVATE -DPROTOBUF_USE_DLLS)
